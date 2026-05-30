@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutiFood Guide – Diet GFCF Anak Autis</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#3BAFDA;--primary-dark:#2189AD;--primary-light:#E0F5FC;
+  --success:#4CAF82;--success-light:#E8F8F0;
+  --danger:#E05C5C;--danger-light:#FDEAEA;
+  --warn:#F5A623;--warn-light:#FEF3E2;
+  --bg:#F4FAFE;--white:#FFFFFF;--text:#1A3445;--muted:#6A8FA0;--border:#D4EDF8;
+  --r:14px;--rs:9px;--sh:0 4px 18px rgba(59,175,218,0.13);--shm:0 8px 30px rgba(59,175,218,0.22);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Quicksand',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;background:linear-gradient(150deg,#3BAFDA 0%,#2189AD 55%,#155F7A 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;
+  transition:opacity .8s,visibility .8s;}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.sp-logo{width:110px;height:110px;background:white;border-radius:26px;display:flex;align-items:center;
+  justify-content:center;font-size:52px;box-shadow:0 10px 40px rgba(0,0,0,.22);margin-bottom:26px;
+  animation:spB 1.1s ease infinite alternate;}
+@keyframes spB{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+.sp-title{font-family:'Nunito',sans-serif;font-size:34px;font-weight:900;color:#fff;letter-spacing:.5px;}
+.sp-sub{font-size:14px;color:rgba(255,255,255,.82);margin-top:6px;font-weight:600;}
+.sp-tag{font-size:12px;color:rgba(255,255,255,.6);margin-top:8px;}
+.sp-dots{display:flex;gap:8px;margin-top:44px;}
+.sp-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.35);animation:spD 1.3s infinite;}
+.sp-dot:nth-child(2){animation-delay:.2s}.sp-dot:nth-child(3){animation-delay:.4s}
+@keyframes spD{0%,100%{background:rgba(255,255,255,.35);transform:scale(1)}50%{background:#fff;transform:scale(1.35)}}
+
+/* SHELL */
+#app{display:none;flex-direction:column;min-height:100vh;}
+#app.active{display:flex;}
+
+/* HEADER */
+.hdr{background:var(--white);padding:13px 18px;display:flex;align-items:center;gap:11px;
+  box-shadow:0 2px 14px rgba(59,175,218,.09);position:sticky;top:0;z-index:100;}
+.hdr-logo{font-size:22px;}
+.hdr-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:19px;color:var(--primary-dark);flex:1;}
+.hdr-title b{color:var(--warn);}
+
+/* NAV */
+.nav{background:var(--white);display:flex;border-bottom:2px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;position:sticky;top:52px;z-index:99;}
+.nav::-webkit-scrollbar{display:none;}
+.ntab{padding:11px 18px;font-weight:700;font-size:13px;color:var(--muted);border:none;background:none;
+  cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;
+  transition:all .2s;display:flex;align-items:center;gap:5px;}
+.ntab.active{color:var(--primary-dark);border-bottom-color:var(--primary);}
+.ntab:hover:not(.active){color:var(--text);}
+
+/* PAGE */
+.page{display:none;padding:18px;flex:1;max-width:940px;margin:0 auto;width:100%;}
+.page.active{display:block;}
+
+/* SEARCH BAR */
+.sbar{position:relative;margin-bottom:18px;}
+.sbar input{width:100%;padding:12px 16px 12px 42px;border:2px solid var(--border);border-radius:var(--r);
+  font-family:'Quicksand',sans-serif;font-size:14px;outline:none;background:var(--white);transition:border-color .2s;}
+.sbar input:focus{border-color:var(--primary);}
+.sbar-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:17px;}
+
+/* HOME */
+.hero{background:linear-gradient(130deg,var(--primary) 0%,var(--primary-dark) 100%);
+  border-radius:var(--r);padding:26px;color:#fff;margin-bottom:22px;position:relative;overflow:hidden;}
+.hero::after{content:'🥗🥕🍌';font-size:55px;position:absolute;right:-8px;top:8px;opacity:.18;transform:rotate(12deg);}
+.hero h2{font-family:'Nunito',sans-serif;font-size:21px;font-weight:900;margin-bottom:5px;}
+.hero p{font-size:13px;opacity:.9;line-height:1.6;}
+.hcards{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:18px;}
+.hcard{background:var(--white);border-radius:var(--r);padding:20px 16px;cursor:pointer;transition:all .25s;
+  border:2px solid transparent;display:flex;flex-direction:column;align-items:flex-start;gap:9px;box-shadow:var(--sh);}
+.hcard:hover{transform:translateY(-3px);box-shadow:var(--shm);border-color:var(--primary-light);}
+.hcard .ico{font-size:34px;}
+.hcard h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;}
+.hcard p{font-size:12px;color:var(--muted);line-height:1.4;}
+.hcard .bdg{background:var(--primary-light);color:var(--primary-dark);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+.scard{background:var(--white);border-radius:var(--rs);padding:14px;text-align:center;box-shadow:var(--sh);}
+.scard .snum{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;color:var(--primary);}
+.scard .slbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
+
+/* FILTER */
+.frow{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+.fbtn{padding:6px 14px;border-radius:20px;font-family:'Quicksand',sans-serif;font-weight:700;font-size:13px;cursor:pointer;border:2px solid transparent;transition:all .2s;}
+.fbtn-all{background:var(--text);color:#fff;}
+.fbtn-allow{background:var(--success-light);color:#1E6B45;border-color:var(--success);}
+.fbtn-deny{background:var(--danger-light);color:#8B2222;border-color:var(--danger);}
+.fbtn-inactive{background:var(--white);color:var(--muted);border-color:var(--border);}
+
+/* FOOD GRID */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:13px;}
+.fcard{background:var(--white);border-radius:var(--rs);cursor:pointer;transition:all .2s;
+  box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column;}
+.fcard:hover{transform:translateY(-3px);box-shadow:var(--shm);}
+.fcard.allow{border-top:4px solid var(--success);}
+.fcard.deny{border-top:4px solid var(--danger);}
+.fcard-img{width:100%;height:115px;overflow:hidden;background:var(--primary-light);
+  display:flex;align-items:center;justify-content:center;font-size:46px;}
+.fcard-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+.fcard:hover .fcard-img img{transform:scale(1.07);}
+.fcard-body{padding:11px;}
+.fcard-name{font-weight:700;font-size:13px;margin-bottom:5px;}
+.fstatus{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-block;}
+.fstatus.allow{background:var(--success-light);color:#1E6B45;}
+.fstatus.deny{background:var(--danger-light);color:#8B2222;}
+.fcard-cal{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:200;display:none;align-items:center;justify-content:center;padding:18px;}
+.overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--r);max-width:400px;width:100%;max-height:90vh;overflow-y:auto;animation:mIn .3s ease;}
+@keyframes mIn{from{transform:scale(.9) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.modal-imgbox{width:100%;height:190px;overflow:hidden;background:var(--primary-light);
+  display:flex;align-items:center;justify-content:center;font-size:72px;
+  border-radius:var(--r) var(--r) 0 0;}
+.modal-imgbox img{width:100%;height:100%;object-fit:cover;}
+.modal-body{padding:18px;}
+.modal-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:8px;}
+.modal-name{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;}
+.modal-close{background:none;border:none;font-size:21px;cursor:pointer;color:var(--muted);flex-shrink:0;}
+.modal-meta{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;}
+.mmeta{background:var(--bg);border-radius:var(--rs);padding:9px 12px;}
+.mmeta .lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
+.mmeta .val{font-size:13px;font-weight:700;margin-top:2px;}
+.reason-box{background:var(--danger-light);border-radius:var(--rs);padding:11px 13px;font-size:12px;color:#7A2020;line-height:1.5;}
+
+/* RECIPE GRID */
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:15px;}
+.rcard{background:var(--white);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .25s;box-shadow:var(--sh);}
+.rcard:hover{transform:translateY(-4px);box-shadow:var(--shm);}
+.rthumb{width:100%;height:140px;overflow:hidden;background:linear-gradient(135deg,var(--primary-light),var(--white));
+  display:flex;align-items:center;justify-content:center;font-size:62px;}
+.rthumb img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+.rcard:hover .rthumb img{transform:scale(1.06);}
+.rinfo{padding:13px;}
+.rinfo h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;margin-bottom:6px;}
+.rtags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px;}
+.tag{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.tag-g{background:var(--success-light);color:#1E6B45;}
+.tag-t{background:var(--warn-light);color:#7A4A00;}
+.tag-s{background:var(--primary-light);color:var(--primary-dark);}
+.rrating{font-size:13px;font-weight:700;color:var(--warn);}
+
+/* RECIPE DETAIL */
+.rdh{background:linear-gradient(130deg,var(--primary),var(--primary-dark));border-radius:var(--r);
+  padding:0;color:#fff;margin-bottom:18px;overflow:hidden;}
+.rdh-img{width:100%;height:200px;object-fit:cover;display:block;}
+.rdh-img-placeholder{width:100%;height:160px;display:flex;align-items:center;justify-content:center;font-size:72px;}
+.rdh-info{padding:18px 20px 20px;}
+.rdh-info h2{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;}
+.rdh-mtags{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
+.rdh-mtag{background:rgba(255,255,255,.22);padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;}
+.rsec{background:var(--white);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh);}
+.rsec h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:16px;margin-bottom:12px;color:var(--primary-dark);}
+.ilist{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.ilist li{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--bg);border-radius:var(--rs);font-size:13px;}
+.ilist li::before{content:'•';color:var(--primary);font-size:18px;font-weight:900;}
+.slist{display:flex;flex-direction:column;gap:11px;}
+.sitem{display:flex;gap:12px;align-items:flex-start;}
+.snum{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;margin-top:1px;}
+.stext{font-size:13px;line-height:1.65;}
+.btn-shop{width:100%;padding:13px;background:var(--warn);color:#fff;border:none;border-radius:var(--r);
+  font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:7px;}
+.btn-shop:hover{background:#d48f1a;transform:translateY(-1px);}
+.btn-back{background:none;border:none;color:var(--primary-dark);font-family:'Quicksand',sans-serif;
+  font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:5px;margin-bottom:14px;padding:0;}
+
+/* SEARCH RESULTS */
+.sres{display:flex;flex-direction:column;gap:9px;}
+.sitem2{background:var(--white);border-radius:var(--rs);padding:12px 15px;display:flex;align-items:center;
+  gap:12px;cursor:pointer;transition:all .2s;box-shadow:var(--sh);}
+.sitem2:hover{transform:translateX(4px);}
+.si-img{width:44px;height:44px;border-radius:9px;overflow:hidden;background:var(--primary-light);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.si-img img{width:100%;height:100%;object-fit:cover;}
+.si-info{flex:1;}
+.si-name{font-weight:700;font-size:14px;}
+.si-type{font-size:11px;color:var(--muted);}
+.si-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+.sec-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+
+/* EMPTY / LOADING */
+.empty{text-align:center;padding:38px 18px;color:var(--muted);}
+.empty-ico{font-size:44px;margin-bottom:10px;}
+.empty p{font-size:14px;font-weight:600;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--text);color:#fff;padding:11px 18px;
+  border-radius:var(--rs);font-size:13px;font-weight:600;z-index:9999;transform:translateY(70px);opacity:0;transition:all .3s;max-width:270px;}
+.toast.show{transform:none;opacity:1;}
+.toast.ok{background:var(--success);}
+.toast.err{background:var(--danger);}
+
+@media(max-width:500px){
+  .hcards{grid-template-columns:1fr 1fr;}
+  .stats{grid-template-columns:repeat(3,1fr);}
+  .fgrid{grid-template-columns:repeat(2,1fr);}
+  .rgrid{grid-template-columns:1fr;}
+  .modal-meta{grid-template-columns:1fr;}
+  .rdh-info h2{font-size:17px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sp-logo">🥗</div>
+  <div class="sp-title">AutiFood Guide</div>
+  <div class="sp-sub">Diet GFCF untuk Anak Autis</div>
+  <div class="sp-tag">Makanan sehat, anak lebih bahagia ✨</div>
+  <div class="sp-dots">
+    <div class="sp-dot"></div><div class="sp-dot"></div><div class="sp-dot"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-logo">🥗</div>
+    <div class="hdr-title">Auti<b>Food</b> Guide</div>
+  </div>
+  <div class="nav">
+    <button class="ntab active" onclick="showPage('home')">🏠 Beranda</button>
+    <button class="ntab" onclick="showPage('foodguide')">📋 Food Guide</button>
+    <button class="ntab" onclick="showPage('recipes')">🍳 Resep</button>
+    <button class="ntab" onclick="showPage('search')">🔍 Cari</button>
+  </div>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="hero">
+      <h2>Selamat Datang! 👋</h2>
+      <p>Panduan lengkap makanan GFCF (Gluten-Free &amp; Casein-Free) untuk anak dengan Autism Spectrum Disorder. Pilih makanan yang tepat untuk mendukung tumbuh kembang si kecil.</p>
+    </div>
+    <div class="hcards">
+      <div class="hcard" onclick="showPage('foodguide')">
+        <div class="ico">📋</div><h3>Food Guide</h3>
+        <p>Katalog makanan aman &amp; dilarang untuk diet GFCF</p>
+        <span class="bdg" id="hfc">Memuat...</span>
+      </div>
+      <div class="hcard" onclick="showPage('recipes')">
+        <div class="ico">🍳</div><h3>Resep Simpel</h3>
+        <p>Resep GFCF praktis untuk anak autis</p>
+        <span class="bdg" id="hrc">Memuat...</span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="scard"><div class="snum" id="s-allow">—</div><div class="slbl">✅ Boleh</div></div>
+      <div class="scard"><div class="snum" id="s-deny">—</div><div class="slbl">❌ Dilarang</div></div>
+      <div class="scard"><div class="snum" id="s-recipe">—</div><div class="slbl">🍽 Resep</div></div>
+    </div>
+  </div>
+
+  <!-- FOOD GUIDE -->
+  <div id="page-foodguide" class="page">
+    <div class="sbar"><span class="sbar-ico">🔍</span>
+      <input type="text" id="food-q" placeholder="Cari nama makanan atau kategori..." oninput="renderFoods()">
+    </div>
+    <div class="frow">
+      <button class="fbtn fbtn-all" id="f-all" onclick="setFilter('all')">Semua</button>
+      <button class="fbtn fbtn-allow fbtn-inactive" id="f-allow" onclick="setFilter('allow')">✅ Boleh</button>
+      <button class="fbtn fbtn-deny fbtn-inactive" id="f-deny" onclick="setFilter('deny')">❌ Dilarang</button>
+    </div>
+    <div id="fgrid" class="fgrid"></div>
+  </div>
+
+  <!-- RECIPES -->
+  <div id="page-recipes" class="page">
+    <div id="rlist-view">
+      <div class="sbar"><span class="sbar-ico">🔍</span>
+        <input type="text" id="recipe-q" placeholder="Cari nama resep..." oninput="renderRecipes()">
+      </div>
+      <div id="rgrid" class="rgrid"></div>
+    </div>
+    <div id="rdetail-view" style="display:none;"></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="page-search" class="page">
+    <div class="sbar"><span class="sbar-ico">🔍</span>
+      <input type="text" id="global-q" placeholder="Cari makanan atau resep..." oninput="globalSearch()">
+    </div>
+    <div id="gresults"><div class="empty"><div class="empty-ico">🔍</div><p>Ketik untuk mencari...</p></div></div>
+  </div>
+</div>
+
+<!-- FOOD DETAIL MODAL -->
+<div class="overlay" id="fmodal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-imgbox" id="fm-imgbox"></div>
+    <div class="modal-body">
+      <div class="modal-top">
+        <div>
+          <div class="modal-name" id="fm-name"></div>
+          <span class="fstatus" id="fm-status" style="margin-top:6px;display:inline-block;"></span>
+        </div>
+        <button class="modal-close" onclick="document.getElementById('fmodal').classList.remove('open')">✕</button>
+      </div>
+      <div class="modal-meta">
+        <div class="mmeta"><div class="lbl">KALORI</div><div class="val" id="fm-cal"></div></div>
+        <div class="mmeta"><div class="lbl">KATEGORI</div><div class="val" id="fm-cat"></div></div>
+        <div class="mmeta"><div class="lbl">STATUS GFCF</div><div class="val" id="fm-gfcf"></div></div>
+      </div>
+      <div id="fm-reason"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================================
+// CATATAN UNTUK KAMU:
+// Letakkan semua gambar di folder "images/" di repository GitHub
+// Format nama: nama-makanan.jpg (huruf kecil, spasi → tanda -)
+// Contoh: images/nasi-merah.jpg, images/ikan-salmon.jpg
+// =============================================================
+
+const FOODS = [
+  // ============ ✅ BOLEH ============
+  {id:1,  name:'Apel',          img:'images/apel.jpg',           status:'allow', cat:'Buah',           cal:'52 kkal',           reason:''},
+  {id:2,  name:'Pepaya',        img:'images/pepaya.jpg',         status:'allow', cat:'Buah',           cal:'120 kkal',          reason:''},
+  {id:3,  name:'Mangga',        img:'images/mangga.jpg',         status:'allow', cat:'Buah',           cal:'60 kkal',           reason:''},
+  {id:4,  name:'Pisang',        img:'images/pisang.jpg',         status:'allow', cat:'Buah',           cal:'89 kkal',           reason:''},
+  {id:5,  name:'Jambu Kristal', img:'images/jambu-kristal.jpg',  status:'allow', cat:'Buah',           cal:'68 kkal',           reason:''},
+  {id:6,  name:'Anggur Hijau',  img:'images/anggur-hijau.jpg',   status:'allow', cat:'Buah',           cal:'69 kkal',           reason:''},
+  {id:7,  name:'Semangka',      img:'images/semangka.jpg',       status:'allow', cat:'Buah',           cal:'30 kkal',           reason:''},
+  {id:8,  name:'Brokoli',       img:'images/brokoli.jpg',        status:'allow', cat:'Sayuran',        cal:'34 kkal',           reason:''},
+  {id:9,  name:'Kembang Kol',   img:'images/kembang-kol.jpg',    status:'allow', cat:'Sayuran',        cal:'25 kkal',           reason:''},
+  {id:10, name:'Wortel',        img:'images/wortel.jpg',         status:'allow', cat:'Sayuran',        cal:'41 kkal',           reason:''},
+  {id:11, name:'Bayam',         img:'images/bayam.jpg',          status:'allow', cat:'Sayuran',        cal:'23 kkal',           reason:''},
+  {id:12, name:'Labu Siam',     img:'images/labu-siam.jpg',      status:'allow', cat:'Sayuran',        cal:'19 kkal',           reason:''},
+  {id:13, name:'Sawi',          img:'images/sawi.jpg',           status:'allow', cat:'Sayuran',        cal:'16 kkal',           reason:''},
+  {id:14, name:'Kangkung',      img:'images/kangkung.jpg',       status:'allow', cat:'Sayuran',        cal:'19 kkal',           reason:''},
+  {id:15, name:'Tomat',         img:'images/tomat.jpg',          status:'allow', cat:'Sayuran',        cal:'20 kkal',           reason:''},
+  {id:16, name:'Daging Sapi',   img:'images/daging-sapi.jpg',    status:'allow', cat:'Protein',        cal:'143 kkal',          reason:''},
+  {id:17, name:'Ayam Kampung',  img:'images/ayam-kampung.jpg',   status:'allow', cat:'Protein',        cal:'165 kkal',          reason:''},
+  {id:18, name:'Ikan Salmon',   img:'images/ikan-salmon.jpg',    status:'allow', cat:'Protein',        cal:'208 kkal',          reason:''},
+  {id:19, name:'Udang',         img:'images/udang.jpg',          status:'allow', cat:'Protein',        cal:'92 kkal',           reason:''},
+  {id:20, name:'Telur',         img:'images/telur.jpg',          status:'allow', cat:'Protein',        cal:'155 kkal',          reason:''},
+  {id:21, name:'Cumi',          img:'images/cumi.jpg',           status:'allow', cat:'Protein',        cal:'92 kkal',           reason:''},
+  {id:22, name:'Tahu',          img:'images/tahu.jpg',           status:'allow', cat:'Protein Nabati', cal:'76 kkal',           reason:''},
+  {id:23, name:'Kacang Hijau',  img:'images/kacang-hijau.jpg',   status:'allow', cat:'Protein Nabati', cal:'76 kkal',           reason:''},
+  {id:24, name:'Kacang Mede',   img:'images/kacang-mede.jpg',    status:'allow', cat:'Protein Nabati', cal:'553 kkal',          reason:''},
+  {id:25, name:'Kacang Tanah',  img:'images/kacang-tanah.jpg',   status:'allow', cat:'Protein Nabati', cal:'567 kkal',          reason:''},
+  {id:26, name:'Nasi Merah',    img:'images/nasi-merah.jpg',     status:'allow', cat:'Karbohidrat',    cal:'130 kkal',          reason:''},
+  {id:27, name:'Ubi Jalar',     img:'images/ubi-jalar.jpg',      status:'allow', cat:'Karbohidrat',    cal:'86 kkal',           reason:''},
+  {id:28, name:'Singkong',      img:'images/singkong.jpg',       status:'allow', cat:'Karbohidrat',    cal:'160 kkal',          reason:''},
+  {id:29, name:'Talas',         img:'images/talas.jpg',          status:'allow', cat:'Karbohidrat',    cal:'111 kkal',          reason:''},
+  {id:30, name:'Kentang',       img:'images/kentang.jpg',        status:'allow', cat:'Karbohidrat',    cal:'77 kkal',           reason:''},
+  {id:31, name:'Jagung',        img:'images/jagung.jpg',         status:'allow', cat:'Karbohidrat',    cal:'96 kkal',           reason:''},
+  // ============ ❌ DILARANG ============
+  {id:32, name:'Gula',              img:'images/gula.jpg',              status:'deny', cat:'Karbohidrat',    cal:'1g = 4 kkal',        reason:'Memicu hiperaktivitas dan agresi. Dapat memicu pertumbuhan jamur di saluran pencernaan.'},
+  {id:33, name:'Jelly',             img:'images/jelly.jpg',             status:'deny', cat:'Makanan Olahan', cal:'30 kkal/cup',         reason:'Gula tinggi membuat anak sulit fokus, lebih aktif, dan emosi tidak stabil.'},
+  {id:34, name:'Tempe',             img:'images/tempe.jpg',             status:'deny', cat:'Protein Nabati', cal:'200 kkal/100g',       reason:'Makanan hasil fermentasi/ragi dapat memperparah saluran pencernaan anak autis.'},
+  {id:35, name:'Tape',              img:'images/tape.jpg',              status:'deny', cat:'Karbohidrat',    cal:'140-170 kkal/100g',   reason:'Mengandung ragi (fermentasi) yang dapat memperparah saluran pencernaan.'},
+  {id:36, name:'Mentega',           img:'images/mentega.jpg',           status:'deny', cat:'Lemak',          cal:'100 kkal/100g',       reason:'Mengandung kasein tinggi — dapat menyebabkan sulit berkomunikasi dan kontak sosial.'},
+  {id:37, name:'Keju',              img:'images/keju.jpg',              status:'deny', cat:'Dairy',          cal:'300 kkal/100g',       reason:'Kasein tinggi — dapat menyebabkan gejala sulit berkomunikasi dan kontak sosial.'},
+  {id:38, name:'Yogurt',            img:'images/yogurt.jpg',            status:'deny', cat:'Dairy',          cal:'100 kkal/cup',        reason:'Mengandung kasein dari susu yang dapat memperburuk gejala autis.'},
+  {id:39, name:'Tepung Terigu',     img:'images/tepung-terigu.jpg',     status:'deny', cat:'Karbohidrat',    cal:'340 kkal/100g',       reason:'Mengandung gluten yang sulit dicerna oleh tubuh anak autis.'},
+  {id:40, name:'Roti',              img:'images/roti.jpg',              status:'deny', cat:'Karbohidrat',    cal:'100 kkal',            reason:'Mengandung gluten (gandum/wheat) yang sulit dicerna anak autis.'},
+  {id:41, name:'Gandum',            img:'images/gandum.jpg',            status:'deny', cat:'Karbohidrat',    cal:'330 kkal/100g',       reason:'Sumber gluten utama — sulit dicerna atau diurai oleh tubuh anak autis.'},
+  {id:42, name:'Pasta',             img:'images/pasta.jpg',             status:'deny', cat:'Karbohidrat',    cal:'160 kkal/100g',       reason:'Mengandung gluten tinggi yang sulit dicerna oleh tubuh anak autis.'},
+  {id:43, name:'Mie Instan',        img:'images/mie-instan.jpg',        status:'deny', cat:'Makanan Olahan', cal:'350 kkal/90g',        reason:'Mengandung gluten tinggi dan MSG yang dapat memperburuk perilaku.'},
+  {id:44, name:'Bakso',             img:'images/bakso.jpg',             status:'deny', cat:'Protein Hewani', cal:'500 kkal/mangkuk',    reason:'Mengandung penyedap (MSG) — anak sensitif, sulit tenang, perilaku berubah.'},
+  {id:45, name:'Makanan Siap Saji', img:'images/makanan-siap-saji.jpg', status:'deny', cat:'Makanan Olahan', cal:'100-500 kkal',        reason:'Mengandung MSG dan bahan tambahan yang memperburuk fokus dan perilaku.'},
+  {id:46, name:'Acar',              img:'images/acar.jpg',              status:'deny', cat:'Makanan Olahan', cal:'50 kkal/100g',        reason:'Makanan asam + pengawet dapat mengganggu pencernaan sensitif anak autis.'},
+  {id:47, name:'Minuman Kemasan',   img:'images/minuman-kemasan.jpg',   status:'deny', cat:'Minuman',        cal:'70-180 kkal',         reason:'Pengawet dan gula berlebihan memperburuk fokus dan emosi anak autis.'},
+  {id:48, name:'Ikan Kaleng',       img:'images/ikan-kaleng.jpg',       status:'deny', cat:'Protein Hewani', cal:'100-250 kkal',        reason:'Mengandung pengawet yang dapat memengaruhi pencernaan dan perilaku.'},
+  {id:49, name:'Nugget',            img:'images/nugget.jpg',            status:'deny', cat:'Protein Olahan', cal:'300 kkal/100g',       reason:'Mengandung pengawet yang dapat memengaruhi pencernaan dan perilaku.'},
+  {id:50, name:'Sosis',             img:'images/sosis.jpg',             status:'deny', cat:'Protein Olahan', cal:'250-320 kkal/100g',   reason:'Pengawet tinggi dapat memengaruhi kenyamanan pencernaan dan perilaku.'},
+  {id:51, name:'Jajanan Kemasan',   img:'images/jajanan-kemasan.jpg',   status:'deny', cat:'Makanan Olahan', cal:'120-180 kkal',        reason:'Mengandung MSG — anak sensitif, sulit tenang, perilaku berubah-ubah.'},
+  {id:52, name:'Permen Warna-warni',img:'images/permen.jpg',            status:'deny', cat:'Manisan',        cal:'350 kkal/100g',       reason:'Pewarna buatan berkaitan dengan meningkatnya hiperaktif dan sulit konsentrasi.'},
+  {id:53, name:'Sirup',             img:'images/sirup.jpg',             status:'deny', cat:'Minuman Olahan', cal:'40 kkal/sdm',         reason:'Gula berlebihan membuat anak lebih aktif, sulit fokus, emosi tidak stabil.'},
+  {id:54, name:'Kue Ulang Tahun',   img:'images/kue-ulang-tahun.jpg',   status:'deny', cat:'Makanan',        cal:'250-400 kkal/potong', reason:'Gula berlebihan dan gluten (terigu) tidak sesuai diet GFCF anak autis.'},
+  {id:55, name:'Minuman Sachet',    img:'images/minuman-sachet.jpg',    status:'deny', cat:'Minuman',        cal:'50-180 kkal',         reason:'Pemanis dan perasa buatan memperburuk fokus dan emosi anak autis.'},
+  {id:56, name:'Strawberry',        img:'images/strawberry.jpg',        status:'deny', cat:'Buah',           cal:'35 kkal',             reason:'Berisiko residu pestisida tinggi — wajib dicuci sangat bersih sebelum dikonsumsi.'},
+  {id:57, name:'Cabe',              img:'images/cabe.jpg',              status:'deny', cat:'Sayuran',        cal:'40 kkal/100g',        reason:'Residu pestisida dan dapat mengiritasi pencernaan sensitif anak autis.'},
+  {id:58, name:'Anggur Merah',      img:'images/anggur-merah.jpg',      status:'deny', cat:'Buah',           cal:'65 kkal/100g',        reason:'Residu pestisida tinggi — harus dicuci sangat bersih sebelum dikonsumsi.'},
+];
+
+const RECIPES = [
+  {
+    id:1, name:'Ikan Kembung Bakar Kunyit',
+    img:'images/resep/ikan-kembung-bakar-kunyit.jpg', emoji:'🐟',
+    time:'25 menit', serving:'2 porsi', rating:4.7, cal:'~200 kkal',
+    ingredients:[
+      '2 ekor ikan kembung segar, bersihkan',
+      '1 ruas kunyit, haluskan (atau 1 sdt kunyit bubuk)',
+      '1 siung bawang putih, haluskan',
+      '1 sdt air jeruk nipis',
+      'Sedikit garam',
+      'Sedikit minyak kelapa untuk mengoles'
+    ],
+    steps:[
+      'Lumuri ikan dengan air jeruk nipis, diamkan 5 menit, bilas ringan',
+      'Campurkan kunyit halus, bawang putih, dan garam. Balurkan ke seluruh ikan',
+      'Diamkan 15 menit agar bumbu meresap',
+      'Panaskan teflon anti lengket, olesi sedikit minyak kelapa',
+      'Panggang ikan api kecil-sedang hingga matang kedua sisi, jangan sampai gosong',
+      'Sajikan dengan nasi hangat'
+    ]
+  },
+  {
+    id:2, name:'Nasi Kuning Gurih GFCF',
+    img:'images/resep/nasi-kuning-gurih.jpg', emoji:'🍚',
+    time:'30 menit', serving:'2 porsi', rating:4.5, cal:'~180 kkal',
+    ingredients:[
+      '1 mangkuk beras (boleh beras organik)',
+      '1 ruas kunyit, parut dan ambil airnya',
+      '1 batang serai, memarkan',
+      '2 lembar daun salam',
+      'Air kaldu ayam asli (pengganti santan)',
+      'Garam secukupnya'
+    ],
+    steps:[
+      'Cuci bersih beras, masukkan ke dalam rice cooker',
+      'Tambahkan air kaldu ayam sesuai takaran memasak nasi biasa',
+      'Masukkan air kunyit, serai, daun salam, dan sedikit garam',
+      'Aduk rata agar warna kuning merata',
+      'Masak hingga matang sempurna',
+      'Buang batang serai dan daun salam sebelum disajikan'
+    ]
+  },
+  {
+    id:3, name:'Nugget Ayam Sayur Rumahan',
+    img:'images/resep/nugget-ayam-sayur.jpg', emoji:'🍗',
+    time:'40 menit', serving:'4 porsi', rating:4.8, cal:'~250 kkal',
+    ingredients:[
+      '300g ayam giling',
+      '1 batang wortel, parut halus',
+      '3 lembar daun bayam, cincang halus',
+      '2 sdm tepung sagu atau tapioka',
+      '2 butir telur (1 untuk adonan, 1 untuk pelapis)',
+      '2 siung bawang putih + 1 siung bawang merah, haluskan',
+      '½ sdt garam, sedikit merica',
+      'Tepung panir gluten-free atau tepung jagung (cornflakes hancur)',
+      'Minyak kelapa atau minyak jagung secukupnya'
+    ],
+    steps:[
+      'Campurkan ayam giling, wortel, bayam, tepung sagu, 1 telur, dan bumbu halus. Aduk rata',
+      'Masukkan adonan ke loyang yang dialasi daun pisang atau diolesi minyak kelapa',
+      'Kukus selama 20–25 menit hingga matang dan padat. Angkat, biarkan dingin',
+      'Potong-potong sesuai selera (kotak kecil atau stik panjang)',
+      'Celupkan ke kocokan telur, gulingkan ke tepung panir gluten-free hingga rata',
+      'Goreng dengan minyak kelapa api sedang hingga kuning keemasan atau panggang di oven/air fryer'
+    ]
+  },
+  {
+    id:4, name:'Sup Telur Puyuh Jagung Manis',
+    img:'images/resep/sup-telur-puyuh-jagung.jpg', emoji:'🥚',
+    time:'20 menit', serving:'3 porsi', rating:4.5, cal:'~120 kkal',
+    ingredients:[
+      '10 butir telur puyuh, rebus dan kupas',
+      '1 buah jagung manis, pipil',
+      '1 buah wortel, potong dadu kecil',
+      '500ml air kaldu ayam asli',
+      '2 siung bawang putih, geprek',
+      '1 batang daun bawang, iris halus',
+      '½ sdt garam',
+      '1 sdm tepung maizena, larutkan dengan sedikit air'
+    ],
+    steps:[
+      'Tumis bawang putih dengan sedikit minyak kelapa hingga harum',
+      'Masukkan kaldu ayam, tunggu mendidih',
+      'Masukkan wortel dan jagung manis. Masak hingga sayuran empuk',
+      'Masukkan telur puyuh dan daun bawang, tambahkan garam',
+      'Tuang larutan maizena perlahan sambil diaduk hingga kuah sedikit mengental',
+      'Matikan api, sajikan hangat'
+    ]
+  },
+  {
+    id:5, name:'Steak Ayam Komplit',
+    img:'images/resep/steak-ayam-komplit.jpg', emoji:'🥩',
+    time:'25 menit', serving:'2 porsi', rating:4.6, cal:'~320 kkal',
+    ingredients:[
+      '2 paha atas ayam tanpa tulang',
+      '1 buah jeruk nipis, ambil airnya',
+      'Garam dan merica secukupnya',
+      '2 sdm margarin',
+      '200g brokoli',
+      '200g kembang kol',
+      '1 buah wortel',
+      '6 buah buncis'
+    ],
+    steps:[
+      'Lumuri ayam dengan air jeruk nipis, garam, dan merica. Diamkan 5 menit',
+      'Goreng ayam dengan margarin hingga matang dan berwarna kecokelatan. Sisihkan',
+      'Potong-potong sayuran, rebus dengan sedikit garam hingga empuk. Tiriskan',
+      'Sajikan ayam di atas kentang pure, siram dengan saus bawang bombai, dan hiasi dengan sayuran'
+    ]
+  },
+  {
+    id:6, name:'Bubur Pisang',
+    img:'images/resep/bubur-pisang.jpg', emoji:'🍌',
+    time:'5 menit', serving:'1 porsi', rating:4.5, cal:'180 kkal',
+    ingredients:[
+      'Pisang matang 1 buah',
+      'Tepung kelapa 2 sdm',
+      'Air 100ml'
+    ],
+    steps:[
+      'Kupas dan haluskan pisang matang',
+      'Campurkan tepung kelapa dengan air, aduk rata',
+      'Masak di atas api kecil selama 3 menit sambil terus diaduk hingga mengental'
+    ]
+  },
+  {
+    id:7, name:'Nasi Goreng GFCF',
+    img:'images/resep/nasi-goreng-gfcf.jpg', emoji:'🍳',
+    time:'10 menit', serving:'2 porsi', rating:4.7, cal:'280 kkal',
+    ingredients:[
+      'Nasi putih dingin 2 piring',
+      'Telur 2 butir',
+      'Kecap ikan 1 sdm',
+      'Bawang merah 3 siung, iris halus',
+      'Minyak kelapa 1 sdm'
+    ],
+    steps:[
+      'Panaskan minyak kelapa, tumis bawang merah hingga harum kecokelatan',
+      'Masukkan telur, orak-arik hingga setengah matang',
+      'Tambahkan nasi, aduk rata bersama kecap ikan',
+      'Masak 3 menit dengan api besar sambil terus diaduk, sajikan'
+    ]
+  },
+  {
+    id:8, name:'Nasi Goreng Kunyit Telur',
+    img:'images/resep/nasi-goreng-kunyit-telur.jpg', emoji:'🌟',
+    time:'10 menit', serving:'2 porsi', rating:4.6, cal:'260 kkal',
+    ingredients:[
+      'Nasi putih dingin 2 piring',
+      'Kunyit bubuk 1 sdt',
+      'Telur 2 butir',
+      'Bawang merah 3 siung',
+      'Bawang putih 2 siung',
+      'Minyak kelapa 1 sdm',
+      'Garam secukupnya'
+    ],
+    steps:[
+      'Tumis bawang merah dan bawang putih hingga harum',
+      'Masukkan telur, orak-arik',
+      'Tambahkan nasi dan kunyit bubuk, aduk rata hingga berwarna kuning merata',
+      'Bumbui dengan garam, masak 3 menit di api besar (hindari kecap manis)'
+    ]
+  },
+  {
+    id:9, name:'Stik Wortel',
+    img:'images/resep/stik-wortel.jpg', emoji:'🥕',
+    time:'8 menit', serving:'2 porsi', rating:4.0, cal:'82 kkal',
+    ingredients:[
+      'Wortel 2 buah',
+      'Minyak kelapa 1 sdt',
+      'Garam & lada secukupnya'
+    ],
+    steps:[
+      'Kupas wortel, potong memanjang bentuk stik tebal',
+      'Panaskan minyak kelapa di wajan anti lengket',
+      'Tumis wortel 5–6 menit hingga sedikit lunak, bumbui garam dan lada',
+      'Sajikan sebagai camilan sehat'
+    ]
+  },
+  {
+    id:10, name:'Sup Sayuran',
+    img:'images/resep/sup-sayuran.jpg', emoji:'🍲',
+    time:'10 menit', serving:'3 porsi', rating:4.3, cal:'95 kkal',
+    ingredients:[
+      'Brokoli 100g',
+      'Wortel 1 buah, potong dadu',
+      'Kentang 1 buah, potong dadu',
+      'Kaldu ayam asli 500ml',
+      'Garam & lada secukupnya'
+    ],
+    steps:[
+      'Potong semua sayuran ukuran dadu sedang',
+      'Didihkan kaldu ayam di dalam panci',
+      'Masukkan kentang dan wortel terlebih dahulu, masak 5 menit',
+      'Tambahkan brokoli, masak 3 menit hingga empuk',
+      'Bumbui garam dan lada, sajikan hangat'
+    ]
+  },
+  {
+    id:11, name:'Bola-bola Ubi Goreng Isi Kismis',
+    img:'images/resep/bola-bola-ubi.jpg', emoji:'🟠',
+    time:'30 menit', serving:'4 porsi', rating:4.3, cal:'~180 kkal',
+    ingredients:[
+      '300g ubi merah, kukus',
+      '300g ubi putih, kukus',
+      '300g ubi kuning, kukus',
+      '300g ubi ungu, kukus',
+      '5 sdm kismis',
+      '1 sdm madu',
+      'Minyak goreng secukupnya'
+    ],
+    steps:[
+      'Kukus semua ubi hingga matang, kupas, lalu haluskan masing-masing',
+      'Bentuk adonan ubi menjadi bulatan sebesar bola pingpong',
+      'Isi masing-masing bulatan dengan kismis, bulatkan kembali hingga rapat',
+      'Goreng dalam minyak panas hingga kuning kecokelatan, sajikan dengan madu'
+    ]
+  },
+  {
+    id:12, name:'Puding Buah',
+    img:'images/resep/puding-buah.jpg', emoji:'🍮',
+    time:'20 menit', serving:'6 porsi', rating:4.4, cal:'~90 kkal',
+    ingredients:[
+      '1 bungkus agar-agar putih',
+      '200g stroberi segar',
+      '½ buah nanas madu',
+      '1 buah apel, kupas',
+      '500ml air',
+      '½ gelas sirup stevia'
+    ],
+    steps:[
+      'Potong stroberi menjadi 2 bagian, apel dan nanas potong dadu kecil',
+      'Didihkan agar-agar bersama air dan sirup stevia dalam panci',
+      'Masukkan potongan buah-buahan, aduk perlahan, tunggu 5 menit',
+      'Tuang ke dalam cetakan puding',
+      'Dinginkan di kulkas minimal 2 jam hingga mengeras, sajikan dingin'
+    ]
+  },
+  {
+    id:13, name:'Donat Kentang GFCF',
+    img:'images/resep/donat-kentang.jpg', emoji:'🍩',
+    time:'30 menit', serving:'4 porsi', rating:4.2, cal:'~200 kkal',
+    ingredients:[
+      '250g kentang rebus, haluskan',
+      '100g tepung beras',
+      '80g tepung Mocaf (tepung singkong)',
+      '1½ sdt garam',
+      '90ml santan segar',
+      '1 sdt ekstrak vanili',
+      'Minyak goreng secukupnya',
+      'Madu untuk penyajian'
+    ],
+    steps:[
+      'Campurkan kentang halus, tepung beras, tepung Mocaf, garam, santan, dan vanili. Aduk rata',
+      'Bentuk adonan menjadi bulatan sebesar bola bekel, lubangi tengahnya membentuk donat',
+      'Goreng dalam minyak sedang panas hingga berwarna kuning keemasan',
+      'Tiriskan, sajikan dengan madu'
+    ]
+  },
+  {
+    id:14, name:'Kue Lapis Labu Kuning',
+    img:'images/resep/kue-lapis-labu.jpg', emoji:'🟡',
+    time:'35 menit', serving:'4 porsi', rating:4.3, cal:'~150 kkal',
+    ingredients:[
+      '250g labu kuning, kukus',
+      '300ml santan dari ½ butir kelapa',
+      'Garam secukupnya',
+      '1 lembar daun pandan',
+      '2 sdm tepung maizena',
+      '1 sdm tepung Mocaf (tepung singkong)',
+      '4 sdm madu'
+    ],
+    steps:[
+      'Rebus labu kuning dengan garam dan daun pandan hingga empuk, angkat dan haluskan',
+      'Tambahkan tepung maizena, tepung Mocaf, madu, dan garam. Aduk hingga rata',
+      'Panaskan kukusan, olesi loyang dengan sedikit minyak goreng',
+      'Masukkan adonan sedikit-sedikit, kukus tiap lapis 5 menit, lapis terakhir kukus 15 menit',
+      'Angkat, dinginkan, keluarkan dari loyang dan potong-potong sesuai selera'
+    ]
+  },
+  {
+    id:15, name:'Kentang Kukus Sederhana',
+    img:'images/resep/kentang-kukus.jpg', emoji:'🥔',
+    time:'10 menit', serving:'2 porsi', rating:4.2, cal:'154 kkal',
+    ingredients:[
+      'Kentang 2 buah sedang',
+      'Garam secukupnya',
+      'Minyak zaitun 1 sdt'
+    ],
+    steps:[
+      'Kupas kentang, potong dadu ukuran sedang',
+      'Kukus selama 8–10 menit hingga empuk ketika ditusuk garpu',
+      'Sajikan dengan taburan garam dan minyak zaitun'
+    ]
+  },
+  {
+    id:16, name:'Ayam Panggang Kentang',
+    img:'images/resep/ayam-panggang-kentang.jpg', emoji:'🍗',
+    time:'30 menit', serving:'2 porsi', rating:4.8, cal:'~350 kkal',
+    ingredients:[
+      '2 paha ayam atau fillet dada ayam',
+      '3 buah kentang besar, kupas dan potong tipis 0,5cm',
+      '2 sdm minyak zaitun',
+      '1 buah zukini, potong tipis',
+      '1½ buah bawang bombai, iris halus',
+      'Garam, merica, dan sedikit seledri iris'
+    ],
+    steps:[
+      'Beri garam dan merica pada ayam, diamkan 10 menit',
+      'Goreng ayam dengan sedikit margarin hingga berwarna kecokelatan, sisihkan',
+      'Campurkan kentang dan zukini dengan garam, minyak zaitun, dan seledri. Tata dalam pinggan tahan panas',
+      'Letakkan ayam di atas kentang, taburi bawang bombai dan merica',
+      'Tutup dengan aluminium foil, panggang 15 menit, buka foil dan panggang 5 menit lagi'
+    ]
+  },
+];
+
+// =============================================================
+// LOGIC APLIKASI
+// =============================================================
+let activeFilter = 'all';
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    document.getElementById('app').classList.add('active');
+    updateStats();
+    renderFoods();
+    renderRecipes();
+  }, 2600);
+});
+
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  document.querySelectorAll('.ntab')[['home','foodguide','recipes','search'].indexOf(p)].classList.add('active');
+  if (p === 'recipes') showRList();
+}
+
+function updateStats() {
+  const allow = FOODS.filter(f => f.status === 'allow').length;
+  const deny  = FOODS.filter(f => f.status === 'deny').length;
+  document.getElementById('s-allow').textContent  = allow;
+  document.getElementById('s-deny').textContent   = deny;
+  document.getElementById('s-recipe').textContent = RECIPES.length;
+  document.getElementById('hfc').textContent = FOODS.length + ' makanan';
+  document.getElementById('hrc').textContent = RECIPES.length + ' resep';
+}
+
+// ---- FOOD GUIDE ----
+function setFilter(f) {
+  activeFilter = f;
+  document.getElementById('f-all').className   = 'fbtn fbtn-all'   + (f==='all'   ? '' : ' fbtn-inactive');
+  document.getElementById('f-allow').className = 'fbtn fbtn-allow' + (f==='allow' ? '' : ' fbtn-inactive');
+  document.getElementById('f-deny').className  = 'fbtn fbtn-deny'  + (f==='deny'  ? '' : ' fbtn-inactive');
+  renderFoods();
+}
+
+function renderFoods() {
+  const q = (document.getElementById('food-q')?.value || '').toLowerCase();
+  let list = FOODS;
+  if (activeFilter !== 'all') list = list.filter(f => f.status === activeFilter);
+  if (q) list = list.filter(f => f.name.toLowerCase().includes(q) || f.cat.toLowerCase().includes(q));
+  const grid = document.getElementById('fgrid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🔍</div><p>Tidak ada makanan ditemukan</p></div>';
+    return;
+  }
+  grid.innerHTML = list.map(f => `
+    <div class="fcard ${f.status}" onclick='openFoodModal(${JSON.stringify(f)})'>
+      <div class="fcard-img">
+        <img src="${f.img}" alt="${f.name}" loading="lazy"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:44px;">🍽️</span>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-name">${f.name}</div>
+        <span class="fstatus ${f.status}">${f.status==='allow'?'✅ Boleh':'❌ Dilarang'}</span>
+        <div class="fcard-cal">${f.cal}</div>
+      </div>
+    </div>`).join('');
+}
+
+function openFoodModal(f) {
+  const box = document.getElementById('fm-imgbox');
+  box.innerHTML = '';
+  if (f.img) {
+    const im = document.createElement('img');
+    im.src = f.img; im.alt = f.name;
+    im.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+    im.onerror = () => { box.textContent = '🍽️'; box.style.fontSize='72px'; };
+    box.appendChild(im);
+  } else { box.textContent = '🍽️'; box.style.fontSize = '72px'; }
+  document.getElementById('fm-name').textContent = f.name;
+  const s = document.getElementById('fm-status');
+  s.textContent = f.status==='allow' ? '✅ GFCF Aman' : '❌ Tidak Aman';
+  s.className = 'fstatus ' + f.status;
+  document.getElementById('fm-cal').textContent  = f.cal;
+  document.getElementById('fm-cat').textContent  = f.cat;
+  document.getElementById('fm-gfcf').textContent = f.status==='allow' ? 'Aman ✅' : 'Hindari ❌';
+  document.getElementById('fm-reason').innerHTML = f.reason
+    ? `<div class="reason-box">⚠️ <strong>Alasan:</strong> ${f.reason}</div>` : '';
+  document.getElementById('fmodal').classList.add('open');
+}
+
+// ---- RECIPES ----
+function renderRecipes() {
+  const q = (document.getElementById('recipe-q')?.value || '').toLowerCase();
+  let list = RECIPES;
+  if (q) list = list.filter(r => r.name.toLowerCase().includes(q));
+  const grid = document.getElementById('rgrid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-ico">🍳</div><p>Tidak ada resep ditemukan</p></div>';
+    return;
+  }
+  grid.innerHTML = list.map(r => `
+    <div class="rcard" onclick='showRDetail(${JSON.stringify(r).replace(/'/g,"&#39;")})'>
+      <div class="rthumb">
+        ${r.img
+          ? `<img src="${r.img}" alt="${r.name}" loading="lazy"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+             <span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:62px;">${r.emoji}</span>`
+          : r.emoji}
+      </div>
+      <div class="rinfo">
+        <h3>${r.name}</h3>
+        <div class="rtags">
+          <span class="tag tag-g">GFCF</span>
+          <span class="tag tag-t">⏱ ${r.time}</span>
+          <span class="tag tag-s">🍽 ${r.serving}</span>
+        </div>
+        <div class="rrating">★ ${parseFloat(r.rating).toFixed(1)}
+          <span style="color:var(--muted);font-weight:500;font-size:11px;">· ${r.cal}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function showRList() {
+  document.getElementById('rlist-view').style.display = '';
+  document.getElementById('rdetail-view').style.display = 'none';
+}
+
+function showRDetail(r) {
+  document.getElementById('rlist-view').style.display = 'none';
+  const dv = document.getElementById('rdetail-view');
+  dv.style.display = '';
+  const imgBlock = r.img
+    ? `<img src="${r.img}" alt="${r.name}" class="rdh-img"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+       <div class="rdh-img-placeholder" style="display:none;">${r.emoji}</div>`
+    : `<div class="rdh-img-placeholder">${r.emoji}</div>`;
+  dv.innerHTML = `
+    <button class="btn-back" onclick="showRList()">← Kembali ke Resep</button>
+    <div class="rdh">
+      ${imgBlock}
+      <div class="rdh-info">
+        <h2>${r.name}</h2>
+        <div class="rdh-mtags">
+          <span class="rdh-mtag">⏱ ${r.time}</span>
+          <span class="rdh-mtag">🍽 ${r.serving}</span>
+          <span class="rdh-mtag">★ ${parseFloat(r.rating).toFixed(1)}</span>
+          <span class="rdh-mtag">🔥 ${r.cal}</span>
+        </div>
+      </div>
+    </div>
+    <div class="rsec">
+      <h3>🥬 Bahan-Bahan (${r.ingredients.length} bahan)</h3>
+      <ul class="ilist">${r.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>
+    <div class="rsec">
+      <h3>👨‍🍳 Cara Memasak</h3>
+      <div class="slist">
+        ${r.steps.map((s,i) => `
+          <div class="sitem">
+            <div class="snum">${i+1}</div>
+            <div class="stext">${s}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <button class="btn-shop"
+      onclick="alert('🛒 Daftar Belanja\\n${r.name}\\n\\n${r.ingredients.map(i=>'• '+i).join('\\n')}')">
+      🛒 Lihat Daftar Belanja
+    </button>`;
+}
+
+// ---- GLOBAL SEARCH ----
+function globalSearch() {
+  const q = document.getElementById('global-q').value.toLowerCase().trim();
+  const c = document.getElementById('gresults');
+  if (!q) {
+    c.innerHTML = '<div class="empty"><div class="empty-ico">🔍</div><p>Ketik untuk mencari...</p></div>';
+    return;
+  }
+  const foods   = FOODS.filter(f => f.name.toLowerCase().includes(q) || f.cat.toLowerCase().includes(q));
+  const recipes = RECIPES.filter(r => r.name.toLowerCase().includes(q));
+  if (!foods.length && !recipes.length) {
+    c.innerHTML = `<div class="empty"><div class="empty-ico">😕</div><p>Tidak ada hasil untuk "${q}"</p></div>`;
+    return;
+  }
+  let html = '';
+  if (foods.length) {
+    html += `<div class="sec-lbl">📋 Makanan (${foods.length})</div>
+             <div class="sres" style="margin-bottom:16px;">`;
+    html += foods.map(f => `
+      <div class="sitem2" onclick='openFoodModal(${JSON.stringify(f)});showPage("foodguide")'>
+        <div class="si-img">
+          <img src="${f.img}" alt="${f.name}" loading="lazy"
+            onerror="this.style.display='none';this.parentNode.innerHTML='🍽️'">
+        </div>
+        <div class="si-info">
+          <div class="si-name">${f.name}</div>
+          <div class="si-type">${f.cat} · ${f.cal}</div>
+        </div>
+        <span class="si-badge" style="background:${f.status==='allow'?'var(--success-light)':'var(--danger-light)'};color:${f.status==='allow'?'#1E6B45':'#8B2222'}">
+          ${f.status==='allow'?'✅ Boleh':'❌ Dilarang'}
+        </span>
+      </div>`).join('') + '</div>';
+  }
+  if (recipes.length) {
+    html += `<div class="sec-lbl">🍳 Resep (${recipes.length})</div><div class="sres">`;
+    html += recipes.map(r => `
+      <div class="sitem2" onclick='showPage("recipes");showRDetail(${JSON.stringify(r).replace(/'/g,"&#39;")})'>
+        <div class="si-img">
+          ${r.img
+            ? `<img src="${r.img}" alt="${r.name}" loading="lazy"
+                 onerror="this.style.display='none';this.parentNode.innerHTML='${r.emoji}'">`
+            : r.emoji}
+        </div>
+        <div class="si-info">
+          <div class="si-name">${r.name}</div>
+          <div class="si-type">⏱ ${r.time} · ${r.serving}</div>
+        </div>
+        <span class="si-badge" style="background:var(--primary-light);color:var(--primary-dark);">
+          ★ ${parseFloat(r.rating).toFixed(1)}
+        </span>
+      </div>`).join('') + '</div>';
+  }
+  c.innerHTML = html;
+}
+</script>
+</body>
+</html>
